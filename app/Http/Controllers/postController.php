@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\postRequest;
 use App\Http\Resources\postResource;
+use App\Models\Category;
 use App\Models\Post;
 use App\utilities\ApiResponse;
 use  App\utilities\apiError;
@@ -17,10 +18,34 @@ class postController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        // $posts = Post::with('user','category')->paginate(2);
-        $posts = Post::with('user','category')->paginate(3);
+        $category = $request->query('category');
+        $author = $request->query('author');
+        $startDate = $request->query('start_date');
+        $endDate = $request->query('end_date');
+
+        $query = Post::query();
+
+        if($category){
+            $query->whereHas('category',function($q)use ($category){
+                $q->where('name',$category);
+            });
+        }
+
+        if($author){
+            $query->whereHas('user',function($q)use ($author){
+                $q->where('name',$author);
+            });
+        }
+
+        if ($startDate && $endDate) {
+            $query->whereBetween('created_at', [$startDate, $endDate]);
+        }
+
+        $posts = $query->with('user', 'category')->paginate(10);
+
+        // $posts = Post::with('user','category')->paginate(3);
         if(!$posts) return ApiError::sendError('There is no posts' ,404);
 
         return ApiResponse::sendResponse(200 ,'success', postResource::collection($posts));
