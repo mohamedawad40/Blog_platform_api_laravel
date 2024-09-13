@@ -16,7 +16,7 @@ class postController extends Controller
      */
     public function index()
     {
-        $posts = Post::with('user','category')->get();
+        $posts = Post::with('user','category')->paginate(2);
         if(!$posts) return ApiError::sendError('There is no posts' ,404);
 
         return ApiResponse::sendResponse(200 ,'success', postResource::collection($posts));

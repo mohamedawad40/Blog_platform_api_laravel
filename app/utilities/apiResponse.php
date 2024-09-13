@@ -2,6 +2,7 @@
 
 namespace App\utilities;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Auth;
 
 
 class ApiResponse {
@@ -14,5 +15,14 @@ class ApiResponse {
         ];
 
         return Response::json($response,$code);
+    }
+
+    static function respondWithToken($token)
+    {
+        return response()->json([
+            'status'         => 201,
+            'access_token'   => $token,
+            'token_type'     => 'bearer',
+        ]);
     }
 }
