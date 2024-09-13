@@ -15,10 +15,12 @@ class postResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
             'title' => $this->title,
             'content' => $this->content,
-            'user_name' => $this->user->name,
             'category_name' => $this->category->name,
+            'author_id' => $this->user->id,
+            'author_name' => $this->user->name,
+            'author_email' => $this->user->email,
+
         ];    }
 }

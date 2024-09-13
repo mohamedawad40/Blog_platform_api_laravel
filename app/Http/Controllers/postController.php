@@ -44,7 +44,7 @@ class postController extends Controller
 
         if(!$post) return ApiError::sendError('invalid post Id',404);
 
-        return ApiResponse::sendResponse(201, 'post created successfully', postResource::collection($post));
+        return ApiResponse::sendResponse(201, 'post created successfully', $post);
     }
 
     /**
@@ -52,7 +52,11 @@ class postController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $post = Post::with('user')->get();
+
+        if(!$post) return ApiError::sendError('There is no posts' ,404);
+
+        return ApiResponse::sendResponse(200 ,'post is found', postResource::collection($post));
     }
 
     /**
@@ -79,7 +83,7 @@ class postController extends Controller
             'category_id'   =>  $request->category_id
         ]);
 
-        return ApiResponse::sendResponse(201, 'post updated successfully', postResource::collection($post));
+        return ApiResponse::sendResponse(201, 'post updated successfully', $post);
     }
 
     /**

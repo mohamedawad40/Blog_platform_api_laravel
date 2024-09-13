@@ -15,6 +15,7 @@ class Post extends Model
         'title','content','user_id','category_id',
     ];
 
+    protected $hidden = ['created_at', 'updated_at'];
 
     public function comments(): HasMany
     {
