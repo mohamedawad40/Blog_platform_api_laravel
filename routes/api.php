@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\authController;
+use App\Http\Controllers\commentController;
 use App\Http\Controllers\postController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -20,8 +21,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 Route::middleware(['auth:api'])->group(function (){
-    
     Route::resource('posts',postController::class);
+    Route::post('/posts/{id}/comments',[commentController::class,'store']);
 });
 
 Route::post('register', [authController::class, 'register']);
