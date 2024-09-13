@@ -25,7 +25,7 @@ class postRequest extends FormRequest
             'title'        =>  'required|string|max:255',
             'content'      =>  'required|string',
             'category_id'  =>  'required|exists:categories,id',
-            'user_id'  =>  'required|exists:users,id'
+            // 'user_id'  =>  'required|exists:users,id'
         ];
     }
 

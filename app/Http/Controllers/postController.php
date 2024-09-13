@@ -8,15 +8,19 @@ use App\Models\Post;
 use App\utilities\ApiResponse;
 use  App\utilities\apiError;
 use Illuminate\Http\Request;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class postController extends Controller
 {
+    use AuthorizesRequests;
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $posts = Post::with('user','category')->paginate(2);
+        // $posts = Post::with('user','category')->paginate(2);
+        $posts = Post::with('user','category')->paginate(3);
         if(!$posts) return ApiError::sendError('There is no posts' ,404);
 
         return ApiResponse::sendResponse(200 ,'success', postResource::collection($posts));
@@ -35,10 +39,11 @@ class postController extends Controller
      */
     public function store(postRequest $request)
     {
+        $this->authorize('create', Post::class);
         $post = Post::create([
             'title'     =>  $request->title,
             'content'   =>  $request->content,
-            'user_id'   =>  $request->user_id,
+            'user_id'   =>  auth()->id(),
             'category_id'   =>  $request->category_id,
         ]);
 
@@ -52,11 +57,13 @@ class postController extends Controller
      */
     public function show(string $id)
     {
-        $post = Post::with('user')->get();
+        $post = Post::with('user', 'category')->findOrFail($id);
 
         if(!$post) return ApiError::sendError('There is no posts' ,404);
 
-        return ApiResponse::sendResponse(200 ,'post is found', postResource::collection($post));
+        $this->authorize('view', $post);
+
+        return ApiResponse::sendResponse(200 ,'post is found', new postResource($post));
     }
 
     /**
@@ -73,6 +80,7 @@ class postController extends Controller
     public function update(postRequest $request, string $id)
     {
         $post = Post::find($id);
+        $this->authorize('update', $post);
 
         if(!$post) return ApiError::sendError('invalid post Id',404);
 
@@ -92,6 +100,7 @@ class postController extends Controller
     public function destroy(string $id)
     {
         $post = Post::find($id);
+        $this->authorize('delete', $post);
 
         if(!$post) return ApiError::sendError('invalid post Id',404);
 

@@ -37,9 +37,9 @@ class authController extends Controller
         if (!$credentials['email'] || !$credentials['password']) {
             return ApiResponse::sendResponse(400, 'Please provide a valid email and password');
         }
-        
+
             if (! $token = auth()->attempt($credentials)) {
-            return ApiResponse::sendResponse(401,'user is Unauthorized');
+            return ApiResponse::sendResponse(401,'invalid email or password');
         }
 
         return ApiResponse::respondWithToken($token);
