@@ -132,4 +132,27 @@ class postController extends Controller
         $post->delete();
         return ApiResponse::sendResponse(200, 'post deleted successfully');
     }
+
+    public function search(Request $request)
+    {
+        $search = $request->search;
+
+        $posts = Post::where(function($query) use ($search) {
+            $query->where('title', 'like', "%{$search}%")
+                  ->orWhereHas('user', function ($query) use ($search) {
+                      $query->where('name', 'like', "%{$search}%");
+                  })
+                  ->orWhereHas('category', function ($query) use ($search) {
+                      $query->where('name', 'like', "%{$search}%");
+                  });
+        })
+        ->with('user', 'category')
+        ->paginate(3);
+
+        if ($posts->isEmpty()) {
+            return ApiError::sendError('No posts found', 404);
+        }
+
+        return ApiResponse::sendResponse(200, 'Success', $posts);
+    }
 }

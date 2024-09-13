@@ -23,6 +23,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::middleware(['auth:api'])->group(function (){
     Route::resource('posts',postController::class);
     Route::post('/posts/{id}/comments',[commentController::class,'store']);
+    Route::get('/posts/search',[postController::class,'search']);
+
 });
 
 Route::post('register', [authController::class, 'register']);
